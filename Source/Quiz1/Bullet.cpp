@@ -23,13 +23,15 @@ ABullet::ABullet()
 		mesh->SetStaticMesh(obj.Object);
 		mesh->SetRelativeLocation(FVector(0, 0, 0));
 		mesh->SetRelativeScale3D(FVector(0.6,0.6,0.6));
-		RootComponent = mesh;
+		mesh->SetRelativeRotation((FRotator(90,0,0)).Quaternion());
 	}
 
 	collider->SetCollisionProfileName(TEXT("bullet"));
 	collider->SetSimulatePhysics(true);
 	collider->SetEnableGravity(true);
-	collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);  
+	collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+    collider->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnOverlapBegin);
 }
 
 // Called when the game starts or when spawned
@@ -43,6 +45,13 @@ void ABullet::BeginPlay()
 void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	FVector pos = GetActorLocation() + GetActorLocation() * DeltaTime * 5;
+	this->SetActorLocation(pos);
 
+}
+
+void ABullet::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Activate"));
 }
 
