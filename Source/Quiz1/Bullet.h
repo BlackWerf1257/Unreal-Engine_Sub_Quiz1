@@ -16,7 +16,9 @@ public:
 	// Sets default values for this actor's properties
 	ABullet();
 	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* mesh;
-	UBoxComponent* collider;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+	class UBoxComponent* collider;
 
 protected:
 	// Called when the game starts or when spawned
@@ -25,5 +27,4 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 };

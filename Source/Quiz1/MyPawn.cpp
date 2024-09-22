@@ -17,6 +17,15 @@ AMyPawn::AMyPawn()
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	collider = CreateDefaultSubobject<UBoxComponent>(TEXT("Collider"));
 	RootComponent = collider;
+
+	if(collider)
+	{
+		collider->SetSimulatePhysics(false);
+		collider->SetEnableGravity(true);
+		collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		mesh->SetCollisionProfileName(TEXT("Pawn"));
+	}
+	else UE_LOG(LogTemp, Warning, TEXT("Collider가 없음"));
 	
 	cam = CreateDefaultSubobject<UCameraComponent>(TEXT("cam"));
 	arm = CreateDefaultSubobject<USpringArmComponent>(TEXT("arm"));
@@ -25,32 +34,23 @@ AMyPawn::AMyPawn()
 	arm->SetRelativeRotation(FRotator(-45.0f, 0, 0));
 	cam->SetRelativeLocation(FVector(-1000.f, 0.0f, 200.f));
 	cam->SetupAttachment(arm);
-	mesh->SetupAttachment(arm);
-
-	// 충돌 설정
-	collider->SetCollisionProfileName(TEXT("Pawn"));
-	collider->SetSimulatePhysics(true);
-	collider->SetEnableGravity(true);
-	collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);  
+	mesh->SetupAttachment(RootComponent); 
 	
 	ConstructorHelpers::FObjectFinder<UStaticMesh>
 	obj(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_Bush.SM_Bush'"));
 
 	if (obj.Succeeded())
-	{
 		mesh->SetStaticMesh(obj.Object);
-		mesh->SetRelativeLocation(FVector(0, 0, 0));
-	}
 
-
-	
+	collider->OnComponentBeginOverlap.AddDynamic(this, &AMyPawn::OnBoxBeginOverlap);
 }
 
 // Called when the game starts or when spawned
 void AMyPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	// 충돌 설정
+	UE_LOG(LogTemp, Warning, TEXT("Collision Profile: %s"), *collider->GetCollisionProfileName().ToString());
 }
 
 // Called every frame
@@ -104,4 +104,16 @@ void AMyPawn::Rotate(float value)
 	FRotator rot = GetActorRotation() + FRotator(0,4,0) * value;
 	SetActorRotation(rot);
 }
+
+void AMyPawn::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	ABullet* Bullet = Cast<ABullet>(OtherActor);
+	
+	UE_LOG(LogTemp, Log, TEXT("충돌함"));
+
+	if(Bullet)
+		Bullet->Destroy();
+}
+
 

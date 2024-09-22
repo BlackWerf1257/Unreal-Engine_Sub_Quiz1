@@ -14,9 +14,18 @@ ABullet::ABullet()
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	collider = CreateDefaultSubobject<UBoxComponent>(TEXT("Collider"));
 	RootComponent = collider;
+
+	if(collider)
+	{
+		collider->SetSimulatePhysics(false);
+		collider->SetEnableGravity(true);
+		collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		mesh->SetCollisionProfileName(TEXT("bullet"));
+	}
+
 	
 	ConstructorHelpers::FObjectFinder<UStaticMesh>
-	obj(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Shapes/Shape_NarrowCapsule.Shape_NarrowCapsule'"));
+	obj(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/MaterialSphere.MaterialSphere'"));
 
 	if (obj.Succeeded())
 	{
@@ -26,23 +35,22 @@ ABullet::ABullet()
 		RootComponent = mesh;
 	}
 
-	collider->SetCollisionProfileName(TEXT("bullet"));
-	collider->SetSimulatePhysics(true);
-	collider->SetEnableGravity(true);
-	collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);  
+
 }
 
 // Called when the game starts or when spawned
 void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	FVector vec = GetActorLocation() + GetActorForwardVector() * 500 * DeltaTime;
+	SetActorLocation(vec);
 }
+
+
 

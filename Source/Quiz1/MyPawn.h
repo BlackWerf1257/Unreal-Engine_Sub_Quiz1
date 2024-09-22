@@ -18,7 +18,10 @@ public:
 	// Sets default values for this pawn's properties
 	AMyPawn();
 	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* mesh;
-	UBoxComponent* collider;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+	class UBoxComponent* collider;
+	
 	UPROPERTY(VisibleAnywhere) class UCameraComponent* cam;
 	//타겟과의 거리 유지용
 	UPROPERTY(VisibleAnywhere) class USpringArmComponent* arm;
@@ -39,4 +42,8 @@ public:
 	void Fire();
 	void Jump();
 	void Rotate(float value);
+
+
+	UFUNCTION()
+	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };
