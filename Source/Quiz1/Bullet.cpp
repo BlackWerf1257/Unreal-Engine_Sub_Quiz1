@@ -32,7 +32,7 @@ ABullet::ABullet()
 		mesh->SetStaticMesh(obj.Object);
 		mesh->SetRelativeLocation(FVector(0, 0, 0));
 		mesh->SetRelativeScale3D(FVector(0.6,0.6,0.6));
-		RootComponent = mesh;
+		mesh->SetRelativeRotation((FRotator(90,0,0)).Quaternion());
 	}
 
 
@@ -51,6 +51,7 @@ void ABullet::Tick(float DeltaTime)
 	FVector vec = GetActorLocation() + GetActorForwardVector() * 500 * DeltaTime;
 	SetActorLocation(vec);
 }
+
 
 
 
