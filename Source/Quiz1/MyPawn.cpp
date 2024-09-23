@@ -20,9 +20,10 @@ AMyPawn::AMyPawn()
 
 	if(collider)
 	{
-		collider->SetSimulatePhysics(false);
-		collider->SetEnableGravity(true);
+		collider->SetSimulatePhysics(true);
+		//collider->SetEnableGravity(false);
 		collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		collider->SetCollisionProfileName(TEXT("Pawn"));
 		mesh->SetCollisionProfileName(TEXT("Pawn"));
 	}
 	else UE_LOG(LogTemp, Warning, TEXT("Collider가 없음"));
@@ -50,7 +51,6 @@ void AMyPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	// 충돌 설정
-	UE_LOG(LogTemp, Warning, TEXT("Collision Profile: %s"), *collider->GetCollisionProfileName().ToString());
 }
 
 // Called every frame
@@ -89,7 +89,7 @@ void AMyPawn::Fire()
 	UE_LOG(LogTemp, Log, TEXT("발사함"));
 
 	ABullet* wp = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(),
-				GetActorLocation() + GetActorForwardVector() * 100,
+				GetActorLocation() + GetActorForwardVector() * 200 + GetActorUpVector() * 20,
 				GetActorRotation());
 }
 
@@ -109,11 +109,12 @@ void AMyPawn::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Oth
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ABullet* Bullet = Cast<ABullet>(OtherActor);
-	
-	UE_LOG(LogTemp, Log, TEXT("충돌함"));
-
 	if(Bullet)
 		Bullet->Destroy();
+}
+void AMyPawn::PrintKillCount()
+{
+	UE_LOG(LogTemp, Log, TEXT("킬 카운트 : %d"), killCnt);
 }
 
 

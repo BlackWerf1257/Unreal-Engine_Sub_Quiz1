@@ -1,40 +1,35 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Bullet.h"
-
-#include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 ABullet::ABullet()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	collider = CreateDefaultSubobject<UBoxComponent>(TEXT("Collider"));
+	collider = CreateDefaultSubobject<USphereComponent>(TEXT("Collider"));
 	RootComponent = collider;
 
 	if(collider)
 	{
 		collider->SetSimulatePhysics(false);
-		collider->SetEnableGravity(true);
+		collider->SetEnableGravity(false);  // 중력 비활성화
 		collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		mesh->SetCollisionProfileName(TEXT("bullet"));
+		//collider->SetCollisionProfileName(TEXT("bullet"));  // Custom collision profile
+		collider->SetCollisionProfileName(TEXT("Projectile"));
 	}
 
-	
 	ConstructorHelpers::FObjectFinder<UStaticMesh>
 	obj(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/MaterialSphere.MaterialSphere'"));
 
 	if (obj.Succeeded())
 	{
 		mesh->SetStaticMesh(obj.Object);
-		mesh->SetRelativeLocation(FVector(0, 0, 0));
-		mesh->SetRelativeScale3D(FVector(0.6,0.6,0.6));
-		mesh->SetRelativeRotation((FRotator(90,0,0)).Quaternion());
+		mesh->SetRelativeScale3D(FVector(0.4,0.4,0.4));
+		mesh->SetupAttachment(RootComponent); 
 	}
-
 
 }
 
@@ -42,6 +37,8 @@ ABullet::ABullet()
 void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
+	collider->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnBoxBeginOverlap);
+
 }
 
 // Called every frame
@@ -52,6 +49,11 @@ void ABullet::Tick(float DeltaTime)
 	SetActorLocation(vec);
 }
 
-
-
-
+void ABullet::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// 자기 자신과의 충돌을 무시
+	if (!OtherActor || OtherActor == this)
+		return;
+	
+}

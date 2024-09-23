@@ -4,21 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Components/SphereComponent.h"
-#include "Bullet.generated.h"
+#include "Components/BoxComponent.h"
+#include "TargetScript.generated.h"
 
 UCLASS()
-class QUIZ1_API ABullet : public AActor
+class QUIZ1_API ATargetScript : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ABullet();
+	ATargetScript();
+	class AMyPawn* pawn;
 	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* mesh;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
-	class USphereComponent* collider;
+	class UBoxComponent* collider;
 
 protected:
 	// Called when the game starts or when spawned
@@ -29,5 +29,4 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION()
 	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
 };
